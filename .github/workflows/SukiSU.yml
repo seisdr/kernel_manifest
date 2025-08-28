@@ -311,6 +311,7 @@ jobs:
 
           # Set KSU config to gki_defconfig
           echo "正在更新KernelSU 内核配置..."
+          echo "CONFIG_ARM64_VA_BITS_48=y" >> "$DEFCONFIG"
           echo "CONFIG_KSU=y" >> "$DEFCONFIG"
           echo "CONFIG_KPM=y" >> "$DEFCONFIG"
           echo "CONFIG_KSU_SUSFS_SUS_SU=n >> "$DEFCONFIG"

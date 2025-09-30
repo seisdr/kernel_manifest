@@ -193,6 +193,8 @@ jobs:
             wget https://github.com/epicmann24/kernel_manifest/raw/refs/heads/oneplus/sm8750/bolt.tar.xz -O "$PLATFORM/prebuilts/clang/host/linux-x86/profiles/bolt-$clangver.tar.xz"
           fi
 
+          sed -i "s/KBUILD_CFLAGS += -mcpu=oryon-1/ /" "$COMMON/Makefile"
+          
           git clone https://gitlab.com/kei-space/clang/$clangver.git $PLATFORM/prebuilts/clang/host/linux-x86/clang-$clangver
           
           rm -rf "$PLATFORM/prebuilts/clang/host/linux-x86/clang-r510928"
@@ -216,10 +218,10 @@ jobs:
         if: ${{ startsWith(inputs.KSU_CONFIG, 'SukiSU') }}
         run: |
           cd "$PLATFORM"
-          curl -LSs "https://raw.githubusercontent.com/ShirkNeko/SukiSU-Ultra/main/kernel/setup.sh" | bash -s ${{ env.SukiSU_BRANCH }}
+          curl -LSs "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/susfs-main/kernel/setup.sh" | bash -s ${{ env.SukiSU_BRANCH }}
 
           cd ./KernelSU
-          KSU_VERSION=$(expr $(/usr/bin/git rev-list --count main) "+" 10606)
+          KSU_VERSION=$(expr $(git rev-list --count main 2>/dev/null || echo 13000) + 10700)
           echo "KSUVER=$KSU_VERSION" >> $GITHUB_ENV
           export KSU_VERSION=$KSU_VERSION
           sed -i "s/DKSU_VERSION=12800/DKSU_VERSION=${KSU_VERSION}/" kernel/Makefile
@@ -229,7 +231,7 @@ jobs:
         if: ${{ startsWith(inputs.KSU_CONFIG, 'SukiSU') && inputs.SUSFS == 'enable'}}
         run: |
           cd "$WORKSPACE"
-          git clone https://github.com/ShirkNeko/SukiSU_patch.git
+          git clone https://github.com/SukiSU-Ultra/SukiSU_patch.git
           git clone https://gitlab.com/simonpunk/susfs4ksu.git -b gki-${{ env.ANDROID_VERSION }}-${{ env.KERNEL_VERSION }}
 
           # Copy patches
@@ -258,7 +260,7 @@ jobs:
         run: |
           cd "$WORKSPACE"
           if [ ! -d SukiSU_patch ]; then
-            git clone https://github.com/ShirkNeko/SukiSU_patch.git
+            git clone https://github.com/SukiSU-Ultra/SukiSU_patch.git
           else
             echo "SukiSU_patch 目录已存在，跳过克隆。"
           fi
@@ -327,6 +329,7 @@ jobs:
           # Optimization
           echo "CONFIG_WQ_POWER_EFFICIENT_DEFAULT=y" >> "$DEFCONFIG"
           #echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y" >> "$DEFCONFIG"
+          echo "CONFIG_DYNAMIC_FTRACE_WITH_CALL_OPS=y" >> "$DEFCONFIG"
           echo "CONFIG_AUTOFDO_CLANG=y" >> "$DEFCONFIG"
           echo "CONFIG_SCHED_CLUSTER=y" >> "$DEFCONFIG"
 
@@ -435,6 +438,9 @@ jobs:
               ./oplus/bazel/oplus_modules_variant.sh ${{ inputs.Chipset }} "$BUILD_TYPE" ""
               ./build_with_bazel.py -t ${{ inputs.Chipset }} $BUILD_TYPE "${BAZEL_ARGS[@]}" -o "$(pwd)/out"
             else
+              cd common
+              bash drivers/of/overwriter/overwrite_configs/convert_configs.sh
+              cd ..
               ./tools/bazel run --config=fast --config=stamp --lto=thin --verbose_failures //common:kernel_aarch64_dist -- --dist_dir=dist
             fi
           else

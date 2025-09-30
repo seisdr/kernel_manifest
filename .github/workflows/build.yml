@@ -130,6 +130,8 @@ jobs:
             wget https://github.com/epicmann24/kernel_manifest/raw/refs/heads/oneplus/sm8750/pgo.tar.xz -O "$PLATFORM/prebuilts/clang/host/linux-x86/profiles/pgo-$clangver.tar.xz"
             wget https://github.com/epicmann24/kernel_manifest/raw/refs/heads/oneplus/sm8750/bolt.tar.xz -O "$PLATFORM/prebuilts/clang/host/linux-x86/profiles/bolt-$clangver.tar.xz"
           fi
+
+          sed -i "s/KBUILD_CFLAGS += -mcpu=oryon-1/ /" "$COMMON/Makefile"
           
           git clone https://gitlab.com/kei-space/clang/$clangver.git $CONFIG/kernel_platform/prebuilts/clang/host/linux-x86/clang-$clangver
           
@@ -262,7 +264,7 @@ jobs:
           
           # Add KSU configuration settings
           echo "CONFIG_KSU=y" >> "$DEFCONFIG"
-          echo "CONFIG_KSU_MANUAL_HOOK=y" >> "$DEFCONFIG"
+          echo "CONFIG_KSU_KPROBES_HOOK=n" >> "$DEFCONFIG"
           
           # Add SUSFS configuration settings
           echo "CONFIG_KSU_SUSFS=y" >> "$DEFCONFIG"
@@ -304,6 +306,7 @@ jobs:
           # Optimization
           echo "CONFIG_WQ_POWER_EFFICIENT_DEFAULT=y" >> "$DEFCONFIG"
           #echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y" >> "$DEFCONFIG"
+          echo "CONFIG_DYNAMIC_FTRACE_WITH_CALL_OPS=y" >> "$DEFCONFIG"
           echo "CONFIG_AUTOFDO_CLANG=y" >> "$DEFCONFIG"
           echo "CONFIG_SCHED_CLUSTER=y" >> "$DEFCONFIG"
 
@@ -422,6 +425,9 @@ jobs:
           if [ -f ./build_with_bazel.py ]; then
             #./oplus/bazel/oplus_modules_variant.sh ${{ inputs.soc }} "$BUILD_TYPE" ""
             #./build_with_bazel.py -t ${{ inputs.soc }} $BUILD_TYPE "${BAZEL_ARGS[@]}" -o "$(pwd)/out"
+            cd common
+            bash drivers/of/overwriter/overwrite_configs/convert_configs.sh
+            cd ..
             ./tools/bazel run --config=fast --config=stamp --lto=thin --verbose_failures //common:kernel_aarch64_dist -- --dist_dir=dist
           else
             LTO=thin ./oplus/build/oplus_build_kernel.sh ${{ inputs.soc }} "$BUILD_TYPE"

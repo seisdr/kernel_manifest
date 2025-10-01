@@ -256,7 +256,7 @@ jobs:
           echo "正在打隐藏应用补丁..."
           patch -p1 -F 3 < "69_hide_stuff.patch" || { echo "应用隐藏应用补丁失败"; exit 1; }
           echo "隐藏应用补丁应用完成"
-       #   patch -p1 < ./GKI-Custom/patches/0ac686b9e81ba331c2ad9b420fd21262a80daaa4.patch
+          patch -p1 < ./GKI-Custom/patches/0ac686b9e81ba331c2ad9b420fd21262a80daaa4.patch
           patch -p1 < ./GKI-Custom/patches/3dcc884c689681dda2d9ad24a9e219013f70cfe8.patch
           patch -p1 < ./GKI-Custom/patches/750b43051d2e4317121c7250544ae38fdf28d4c7.patch
           patch -p1 < ./GKI-Custom/patches/a72032ecf33c63d8a4abb64b08c1a0b847c82a32.patch
@@ -321,8 +321,8 @@ jobs:
           
           echo "CONFIG_KSU=y" >> "$DEFCONFIG"
           echo "CONFIG_KPM=y" >> "$DEFCONFIG"
-          echo "CONFIG_KSU_SUSFS_SUS_SU=n >> "$DEFCONFIG"
-          echo "CONFIG_KSU_MANUAL_HOOK=y >> "$DEFCONFIG"
+          echo "CONFIG_KSU_SUSFS_SUS_SU=n" >> "$DEFCONFIG"
+          echo "CONFIG_KSU_MANUAL_HOOK=y" >> "$DEFCONFIG"
 
           # Wakelock Blocker
           echo "CONFIG_BOEFFLA_WL_BLOCKER=y" >> "$DEFCONFIG"
@@ -539,7 +539,7 @@ echo "CONFIG_NETLINK_DIAG=y" >> "$DEFCONFIG"                # Enables netlink di
           path: ${{ env.WORKSPACE }}/AnyKernel3/*
 
       - name: Upload Image # 上传 Image
-        if: false
+      
         uses: actions/upload-artifact@v4
         with:
           name: "Image-${{ inputs.FILE }}-SukiSU-${{ env.KSUVER }}-${{ steps.formatted_date.outputs.formatted }}"

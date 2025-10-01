@@ -256,10 +256,10 @@ jobs:
           echo "正在打隐藏应用补丁..."
           patch -p1 -F 3 < "69_hide_stuff.patch" || { echo "应用隐藏应用补丁失败"; exit 1; }
           echo "隐藏应用补丁应用完成"
-          patch -p1 < ./GKI-Custom/patchs/0ac686b9e81ba331c2ad9b420fd21262a80daaa4.patch
-          patch -p1 < ./GKI-Custom/patchs/3dcc884c689681dda2d9ad24a9e219013f70cfe8.patch
-          patch -p1 < ./GKI-Custom/patchs/750b43051d2e4317121c7250544ae38fdf28d4c7.patch
-          patch -p1 < ./GKI-Custom/patchs/a72032ecf33c63d8a4abb64b08c1a0b847c82a32.patch
+          #patch -p1 < ./GKI-Custom/patchs/0ac686b9e81ba331c2ad9b420fd21262a80daaa4.patch
+          #patch -p1 < ./GKI-Custom/patchs/3dcc884c689681dda2d9ad24a9e219013f70cfe8.patch
+          #patch -p1 < ./GKI-Custom/patchs/750b43051d2e4317121c7250544ae38fdf28d4c7.patch
+          #patch -p1 < ./GKI-Custom/patchs/a72032ecf33c63d8a4abb64b08c1a0b847c82a32.patch
       - name: Apply New Hooks patches # 应用新的钩子补丁
         if: ${{ startsWith(inputs.KSU_CONFIG, 'SukiSU') }}
         run: |

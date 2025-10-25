@@ -467,7 +467,7 @@ jobs:
           ') &
           MONITOR_PID=$!
           trap "kill $MONITOR_PID" EXIT
-          buildozer "add outs ${remaining_ko_files}" //common:kernel_aarch64
+          #buildozer "add outs ${remaining_ko_files}" //common:kernel_aarch64
           #buildozer "add module_outs ${remaining_ko_files}" @@//common:kernel_aarch64 
           #buildozer '\''add module_outs ${remaining_ko_files}'\'' @@//common:kernel_aarch64" >&2
   

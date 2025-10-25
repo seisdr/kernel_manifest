@@ -467,7 +467,8 @@ jobs:
           ') &
           MONITOR_PID=$!
           trap "kill $MONITOR_PID" EXIT
-          buildozer "add module_outs ${remaining_ko_files}" @@//common:kernel_aarch64 
+          buildozer "add outs ${remaining_ko_files}" //common:kernel_aarch64
+          #buildozer "add module_outs ${remaining_ko_files}" @@//common:kernel_aarch64 
           #buildozer '\''add module_outs ${remaining_ko_files}'\'' @@//common:kernel_aarch64" >&2
   
           #buildozer 'add module_outs net/wireless/cfg80211.ko' //common:kernel_aarch64

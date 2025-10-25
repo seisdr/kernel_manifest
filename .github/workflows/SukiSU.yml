@@ -482,7 +482,8 @@ jobs:
               cd common
               bash drivers/of/overwriter/overwrite_configs/convert_configs.sh
               cd ..
-              ./tools/bazel run --config=fast --config=stamp --lto=thin --verbose_failures //common:kernel_aarch64_dist -- --dist_dir=dist
+              ./tools/bazel run --config=fast --config=stamp --lto=thin --verbose_failures --allow_undeclared_modules --nowarn_undeclared_modules //common:kernel_aarch64_dist -- --dist_dir=dist
+             # ./tools/bazel run --config=fast --config=stamp --lto=thin --verbose_failures //common:kernel_aarch64_dist -- --dist_dir=dist
             fi
           else
             echo "2nd build" #original

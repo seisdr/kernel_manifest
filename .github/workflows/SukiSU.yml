@@ -530,9 +530,9 @@ jobs:
           tar -tzf "$MODULES_TAR" | head -10  # List sample paths
           uses: actions/upload-artifact@v4
           with:
-           name: kernel-modules-${{ inputs.FILE }}-${{ inputs.KERNEL_NAME }}
-           path: ${{ env.WORKSPACE }}/modules-*.tar.gz
-           retention-days: 30  # Keeps for 30 days; max 90
+            name: kernel-modules-${{ inputs.FILE }}-${{ inputs.KERNEL_NAME }}
+            path: ${{ env.WORKSPACE }}/modules-*.tar.gz
+            retention-days: 30  # Keeps for 30 days; max 90
       - name: Make AnyKernel3 # 制作 AnyKernel3
         run: |
           cd "$WORKSPACE"

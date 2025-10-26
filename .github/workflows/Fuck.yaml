@@ -1,4 +1,4 @@
-name: Build Oplus Kernel with SukiSU # 构建一加内核
+name:  构建一加内核
 
 on:
   workflow_dispatch:

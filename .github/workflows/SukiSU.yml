@@ -496,7 +496,43 @@ jobs:
             echo "2nd build" #original
             LTO=thin ./oplus/build/oplus_build_kernel.sh ${{ inputs.Chipset }} "$BUILD_TYPE"
           fi
-
+      - name: Extract and Upload Kernel Modules
+        run: |
+          # Search both possible output dirs for .ko files (GKI Bazel pattern)
+          MODULES_SEARCH_PATHS=("$PLATFORM/dist/" "$PLATFORM/out/")
+          MODULES_LIST=()
+          
+          for DIR in "${MODULES_SEARCH_PATHS[@]}"; do
+            if [ -d "$DIR" ]; then
+              # Find .ko recursively, exclude noisy subdirs, sort for consistency
+              FOUND=$(find "$DIR" -path "$DIR/modules.builtin" -prune -o -path "$DIR/vendor" -prune -o -name "*.ko" -type f -print 2>/dev/null | sort)
+              MODULES_LIST+=("$FOUND")
+            fi
+          done
+          
+          # Flatten list (remove empties)
+          MODULES_LIST=$(printf "%s\n" "${MODULES_LIST[@]}" | grep -v '^$')
+          
+          if [ -z "$MODULES_LIST" ]; then
+            echo "No .ko files found in $PLATFORM/dist/ or out/—check build logs."
+            exit 0  # Non-fatal; maybe no =m configs
+          fi
+          
+          echo "Found $(echo "$MODULES_LIST" | wc -l) modules:"
+          echo "$MODULES_LIST" | head -20  # Show first 20 for logs
+          
+          # Create tar.gz (strip prefix for clean extract, e.g., modules/...ko)
+          MODULES_TAR="$WORKSPACE/modules-${{ inputs.FILE }}-${{ inputs.KERNEL_NAME }}.tar.gz"
+          tar -czf "$MODULES_TAR" --transform "s|^$PLATFORM/||g" -T <(echo "$MODULES_LIST")
+          
+          # Verify
+          ls -lh "$MODULES_TAR"
+          tar -tzf "$MODULES_TAR" | head -10  # List sample paths
+          uses: actions/upload-artifact@v4
+          with:
+          name: kernel-modules-${{ inputs.FILE }}-${{ inputs.KERNEL_NAME }}
+          path: ${{ env.WORKSPACE }}/modules-*.tar.gz
+          retention-days: 30  # Keeps for 30 days; max 90
       - name: Make AnyKernel3 # 制作 AnyKernel3
         run: |
           cd "$WORKSPACE"
@@ -559,31 +595,7 @@ jobs:
         run: |
           DATE=$(date +'%y%m%d-%H%M')
           echo "formatted=$DATE" >> $GITHUB_OUTPUT
-      - name: Extract and Upload Kernel Modules
-        run: |
-          # Find all .ko files recursively (excludes any in git clones or temp dirs if needed)
-          MODULES_LIST=$(find "$WORKSPACE" -path "$WORKSPACE/SukiSU_patch" -prune -o -path "$WORKSPACE/susfs4ksu" -prune -o -path "$WORKSPACE/GKI-Custom" -prune -o -name "*.ko" -type f -print | sort)
-          
-          if [ -z "$MODULES_LIST" ]; then
-            echo "No .ko files found—skipping upload."
-            exit 0
-          fi
-          
-          echo "Found ${#MODULES_LIST[@]} modules:"
-          echo "$MODULES_LIST"
-          
-          # Create archive (use -T to pipe the list; preserves paths relative to WORKSPACE)
-          MODULES_TAR="$WORKSPACE/modules-${{ inputs.KERNEL_NAME }}.tar.gz"
-          tar -czf "$MODULES_TAR" --transform "s|^$WORKSPACE/||g" -T <(echo "$MODULES_LIST")
-          
-          # Verify size
-          ls -lh "$MODULES_TAR"
-          uses: actions/upload-artifact@v4
-          with:
-          name: kernel-modules-${{ inputs.FILE }}-${{ inputs.KERNEL_NAME }}
-          path: ${{ env.WORKSPACE }}/modules-*.tar.gz
-          retention-days: 30  # Adjust as needed (max 90)
-          
+
       - name: Upload AnyKernel3 # 上传 AnyKernel3
         uses: actions/upload-artifact@v4
         with:

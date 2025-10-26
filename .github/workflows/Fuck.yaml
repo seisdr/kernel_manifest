@@ -317,8 +317,8 @@ jobs:
           echo "CONFIG_MODULE_FORCE_LOAD=y" >> "$DEFCONFIG"
           #echo "CONFIG_MODULE_SIG=n" >> "$DEFCONFIG"
           #echo "CONFIG_MODULE_SCMVERSION=n" >> "$DEFCONFIG"
-          echo "CONFIG_MODULE_SIG_PROTECT=n" >> "$DEFCONFIG"
-          echo "CONFIG_MODULE_SIG_ALL=n" >> "$DEFCONFIG"
+          #echo "CONFIG_MODULE_SIG_PROTECT=n" >> "$DEFCONFIG"
+          #echo "CONFIG_MODULE_SIG_ALL=n" >> "$DEFCONFIG"
           
           # Consolidated WiFi/USB configs (removed duplicates)
           echo "CONFIG_WLAN=y" >> "$DEFCONFIG"

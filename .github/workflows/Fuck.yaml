@@ -314,7 +314,7 @@ jobs:
           echo "CONFIG_MODULE_FORCE_LOAD=y" >> "$DEFCONFIG"
           echo "CONFIG_BONDING=y"  >> "$DEFCONFIG"
           echo "CONFIG_NFSD=y"  >> "$DEFCONFIG"
-          echo "CONFIG_NFS_FS=y"  >> "$DEFCONFIG"
+          #echo "CONFIG_NFS_FS=y"  >> "$DEFCONFIG"
           # Consolidated WiFi/USB configs (removed duplicates)
           echo "CONFIG_WLAN=y" >> "$DEFCONFIG"
           echo "CONFIG_CFG80211=y" >> "$DEFCONFIG"
